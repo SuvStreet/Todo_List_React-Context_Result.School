@@ -1,0 +1,8 @@
+.change {
+	display: flex;
+	place-content: center;
+	place-items: center;
+	gap: 5px;
+	border-bottom: 1px solid #727272;
+	padding: 10px 0;
+}
