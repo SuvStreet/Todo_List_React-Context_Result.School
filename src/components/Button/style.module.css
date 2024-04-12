@@ -52,6 +52,15 @@
 	filter: invert(0%) sepia(5%) saturate(7500%) hue-rotate(228deg) brightness(98%);
 }
 
+.disabled {
+	opacity: 0.5;
+}
+
+.disabled:hover {
+	cursor: not-allowed;
+	scale: 0.9;
+}
+
 @media (max-width: 840px) {
 	.text {
 		display: none;

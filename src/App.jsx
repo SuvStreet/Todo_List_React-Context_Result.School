@@ -13,9 +13,9 @@ function App() {
 
 	return (
 		<div className='container'>
-			<Create />
-
 			<AppContextProvider todoListValue={{ todoLists, setTodoLists }}>
+				<Create />
+
 				{isLoading ? <Loader /> : <List />}
 			</AppContextProvider>
 		</div>

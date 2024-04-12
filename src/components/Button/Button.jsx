@@ -25,9 +25,19 @@ const TEXT = {
 	back: 'Назад',
 }
 
-export const Button = ({ onClick, type, sort }) => {
+export const Button = ({ onClick, type, sort, disabled }) => {
 	return (
-		<button className={(s[type] || '') + ' ' + (sort ? s.active : '')} onClick={onClick}>
+		<button
+			className={
+				(s[type] || '') +
+				' ' +
+				(sort ? s.active : '') +
+				' ' +
+				(disabled ? s.disabled : '')
+			}
+			onClick={onClick}
+			disabled={disabled}
+		>
 			{['edit', 'remove', 'add', 'sort', 'back'].includes(type) && (
 				<>
 					<img src={!sort ? IMG[type] : sort_off} alt={type} />
@@ -42,4 +52,5 @@ Button.propTypes = {
 	onClick: propsType.func,
 	type: propsType.string,
 	sort: propsType.bool,
+	disabled: propsType.bool,
 }
