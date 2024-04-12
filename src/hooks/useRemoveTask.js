@@ -4,8 +4,12 @@ export const useRemoveTask = (todoLists, setTodoLists) => {
 	const [isRemoveRequest, setIsRemoveRequest] = useState({ id: null, isRemove: false })
 
 	const handleClickRemoveTask = async (event) => {
-		if (!isRemoveRequest.isRemove) {
-			const taskId = Number(event.target.closest('div[id]').id)
+		const taskId = Number(event.target.closest('div[id]').id)
+
+		if (!isRemoveRequest.isRemove || isRemoveRequest.id !== taskId) {
+
+			console.log('taskId', taskId)
+
 			const task = todoLists.find(({ id }) => id === taskId)
 
 			const { title, id } = task

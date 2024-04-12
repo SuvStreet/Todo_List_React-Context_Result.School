@@ -24,12 +24,12 @@ export const Task = () => {
 	}
 
 	return todoLists.map(({ title, id }) => (
-		<div key={id} className={s.task + ' ' + (disabled(id) && s.activeLoading)} id={id}>
+		<div key={id} className={s.task + ' ' + disabled(id)} id={id}>
 			<span className={s.text}>{title}</span>
 
 			<div className={s.section_button}>
-				<Button type={'edit'} onClick={handleClickEditTask} />
-				<Button type={'remove'} onClick={handleClickRemoveTask} />
+				<Button type={'edit'} onClick={handleClickEditTask} disabled={disabled(id)} />
+				<Button type={'remove'} onClick={handleClickRemoveTask} disabled={disabled(id)} />
 			</div>
 		</div>
 	))

@@ -4,8 +4,9 @@ export const useEditTask = (todoLists, setTodoLists) => {
 	const [isEditRequest, setIsEditRequest] = useState({ id: null, isEdit: false })
 
 	const handleClickEditTask = async (event) => {
-		if (!isEditRequest.isEdit) {
-			const taskId = Number(event.target.closest('div[id]').id)
+		const taskId = Number(event.target.closest('div[id]').id)
+
+		if (!isEditRequest.isEdit || isEditRequest.id !== taskId) {
 			const task = todoLists.find(({ id }) => id === taskId)
 
 			const { title, id } = task
