@@ -1,30 +1,34 @@
 import { useContext } from 'react'
 
 import { Button } from '../Button/Button'
-import { TodoContext } from '../../context'
-import { requestEditTask } from '../../utils'
+import { TodoContext } from '../../context/todoContext'
+import { useEditTask, useRemoveTask } from '../../hooks'
 
 import s from './style.module.css'
 
 export const Task = () => {
 	const { todoLists, setTodoLists } = useContext(TodoContext)
 
-	const handleClickIdTask = (event) => {
-		const taskId = Number(event.target.closest('div[id]').id)
-		const task = todoLists.find(({ id }) => id === taskId)
+	const { handleClickEditTask, isEditRequest } = useEditTask(todoLists, setTodoLists)
+	const { handleClickRemoveTask, isRemoveRequest } = useRemoveTask(
+		todoLists,
+		setTodoLists,
+	)
 
-		const { handleClickEditTask } = requestEditTask(task, todoLists, setTodoLists)
-
-		return handleClickEditTask()
+	const disabled = (id) => {
+		return (
+			(isEditRequest.isEdit && id === isEditRequest.id) ||
+			(isRemoveRequest.isRemove && id === isRemoveRequest.id)
+		)
 	}
 
 	return todoLists.map(({ title, id }) => (
-		<div key={id} className={s.task} id={id}>
+		<div key={id} className={s.task + ' ' + (disabled(id) && s.activeLoading)} id={id}>
 			<span className={s.text}>{title}</span>
 
 			<div className={s.section_button}>
-				<Button type={'edit'} onClick={handleClickIdTask} />
-				<Button type={'remove'} />
+				<Button type={'edit'} onClick={handleClickEditTask} />
+				<Button type={'remove'} onClick={handleClickRemoveTask} />
 			</div>
 		</div>
 	))

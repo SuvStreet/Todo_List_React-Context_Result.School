@@ -4,6 +4,10 @@
 	gap: 5px;
 }
 
+.activeLoading {
+	opacity: 0.5;
+}
+
 .text {
 	width: 100%;
 	text-align: start;

@@ -4,7 +4,7 @@ import { Create, Loader, List } from './components'
 
 import { useGetTodoList } from './hooks/useGetTodoList'
 
-import { TodoContext } from './context'
+import { AppContextProvider } from './context/appContextProvider'
 
 function App() {
 	const [isLoading, setIsLoading] = useState(true)
@@ -15,9 +15,9 @@ function App() {
 		<div className='container'>
 			<Create />
 
-			<TodoContext.Provider value={{ todoLists, setTodoLists }}>
+			<AppContextProvider todoListValue={{ todoLists, setTodoLists }}>
 				{isLoading ? <Loader /> : <List />}
-			</TodoContext.Provider>
+			</AppContextProvider>
 		</div>
 	)
 }
