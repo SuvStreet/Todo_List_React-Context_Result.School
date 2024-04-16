@@ -1,18 +1,24 @@
+/* eslint-disable react/prop-types */
 import { useContext } from 'react'
+
 import { TodoContext } from '../../context/todoContext'
 
 import { Task } from '../Task/Task'
 
 import s from './style.module.css'
 
-export const List = () => {
+export const List = ({ resultTextValue }) => {
 	const { todoLists, setTodoLists } = useContext(TodoContext)
 
 	return (
 		<div className={s.taskList}>
-			{todoLists.map(({ title, id }) => (
-				<Task key={id} title={title} id={id} setTodoLists={setTodoLists} />
-			))}
+			{resultTextValue !== '' ? (
+				<small>{resultTextValue}</small>
+			) : (
+				todoLists.map(({ title, id }) => (
+					<Task key={id} title={title} id={id} setTodoLists={setTodoLists} />
+				))
+			)}
 
 			{/* {(debouncedSearchTerm && resultSearch.length === 0) || todoLists.length === 0 ? (
 				<small className={s.emptyTodoList}>

@@ -1,22 +1,28 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Create, Loader, List } from './components'
 
-import { useGetTodoList } from './hooks/useGetTodoList'
+import { getTodoList } from './utils/getTodoList'
 
 import { AppContextProvider } from './context/appContextProvider'
 
 function App() {
+	const [todoLists, setTodoLists] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
+	const [resultTextValue, setResultTextValue] = useState('')
 
-	const { todoLists, setTodoLists } = useGetTodoList(setIsLoading)
+	useEffect(() => {
+		getTodoList(setIsLoading, setTodoLists, setResultTextValue)
+	}, [])
 
 	return (
 		<div className='container'>
-			<AppContextProvider todoListValue={{ todoLists, setTodoLists }}>
-				<Create />
+			<AppContextProvider
+				todoListValue={{ todoLists, setTodoLists }}
+			>
+				<Create setIsLoading={setIsLoading} setResultTextValue={setResultTextValue} />
 
-				{isLoading ? <Loader /> : <List />}
+				{isLoading ? <Loader /> : <List resultTextValue={resultTextValue} />}
 			</AppContextProvider>
 		</div>
 	)
