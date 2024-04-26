@@ -1,42 +1,33 @@
-/* eslint-disable react/prop-types */
-import { useContext } from 'react'
-
-import { TodoContext } from '../../context/todoContext'
+import { useSelector } from 'react-redux'
 
 import { Task } from '../Task/Task'
 
+import {
+	selectTodoList,
+	selectIsSort,
+	selectSortList,
+	selectIsSearch,
+} from '../../redux/selectors'
+
 import s from './style.module.css'
 
-export const List = ({ resultTextValue }) => {
-	const { todoLists, setTodoLists } = useContext(TodoContext)
+export const List = () => {
+	const todoList = useSelector(selectTodoList)
+	const sortList = useSelector(selectSortList)
+	const isSort = useSelector(selectIsSort)
+	const isSearch = useSelector(selectIsSearch)
 
 	return (
 		<div className={s.taskList}>
-			{resultTextValue !== '' ? (
-				<small>{resultTextValue}</small>
-			) : (
-				todoLists.map(({ title, id }) => (
-					<Task key={id} title={title} id={id} setTodoLists={setTodoLists} />
+			{todoList.length !== 0 ? (
+				(isSort ? sortList : todoList).map(({ title, id }) => (
+					<Task key={id} title={title} id={id} />
 				))
-			)}
-
-			{/* {(debouncedSearchTerm && resultSearch.length === 0) || todoLists.length === 0 ? (
-				<small className={s.emptyTodoList}>
-					{todoLists.length === 0
-						? 'На сегодня дел нет, может добавим?'
-						: 'Ничего не нашли!'}
-				</small>
 			) : (
-				(debouncedSearchTerm ? resultSearch : sort ? sortTodoLists : todoLists).map(
-					({ title, id }) => (
-						<div key={id} className={s.task} id={id}>
-							<span className={s.text} onClick={handleClickTask}>
-								{title}
-							</span>
-						</div>
-					),
-				)
-			)} */}
+				<small className={s.emptyTodoList}>
+					{isSearch ? 'Ничего не нашли!' : 'На сегодня дел нет, может добавим?'}
+				</small>
+			)}
 		</div>
 	)
 }

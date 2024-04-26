@@ -1,73 +1,93 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/prop-types */
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
+import {
+	addTask,
+	SET_IS_SEARCH,
+	SET_IS_SORT,
+	SORT_LIST,
+	searchTask,
+	SET_IS_LOADING,
+	getTodoList,
+} from '../../redux/actions'
+import { selectIsSearch, selectIsSort } from '../../redux/selectors'
 
 import { Button } from '../Button/Button'
 import { Title, Search } from './components'
-
-import { TodoContext } from '../../context/todoContext'
-
-import { addTaskRequest, getTodoList } from '../../utils'
 
 import { useDebounce } from '../../hooks'
 
 import s from './style.module.css'
 
-export const Create = ({ setIsLoading, setResultTextValue }) => {
-	const { todoLists, setTodoLists } = useContext(TodoContext)
+export const Create = () => {
+	const dispatch = useDispatch()
+	const [isNotAvailable, setIsNotAvailable] = useState(false)
+	const isSort = useSelector(selectIsSort)
+	const isSearch = useSelector(selectIsSearch)
 
 	const [value, setValue] = useState('')
-	const [isNotAvailable, setIsNotAvailable] = useState(false)
-	const [isSort, setIsSort] = useState(false)
-	const [isSearch, setIsSearch] = useState(false)
-	const [oldTodoLists, setOldTodoLists] = useState([])
 
 	const debouncedSearchTerm = useDebounce(value, 700)
-
-	const sortToggle = () => setIsSort((PrevState) => !PrevState)
 
 	const handleClickAddTask = () => {
 		const task = prompt('Введите задачу:')
 
 		if (task?.trim()) {
-			addTaskRequest(task, setTodoLists, setIsNotAvailable)
+			setIsNotAvailable(true)
+			dispatch(addTask(task))
+				.then(() => {
+					if (isSort) {
+						dispatch(SORT_LIST)
+					}
+				})
+				.catch((error) => {
+					console.error(error)
+				})
+				.finally(() => {
+					setIsNotAvailable(false)
+				})
 		}
 	}
 
 	const handleClickSort = () => {
-		sortToggle()
-
 		if (!isSort) {
-			setOldTodoLists([...todoLists])
-			setTodoLists([...todoLists].toSorted((a, b) => a.title.localeCompare(b.title)))
+			dispatch(SORT_LIST)
+			dispatch(SET_IS_SORT)
 		} else {
-			setTodoLists(oldTodoLists)
+			dispatch(SET_IS_SORT)
 		}
 	}
 
 	useEffect(() => {
 		if (debouncedSearchTerm && debouncedSearchTerm.trim() !== '') {
-			setIsSearch(true)
-			setIsLoading(true)
-			setResultTextValue('')
-
-			fetch(`http://localhost:5000/todos?q=${debouncedSearchTerm}`)
-				.then((response) => response.json())
-				.then((data) => {
-					setTodoLists(data)
-					if (data.length === 0) {
-						setResultTextValue('Ничего не найдено =(')
+			if (!isSearch) {
+				dispatch(SET_IS_SEARCH)
+			}
+			dispatch(SET_IS_LOADING)
+			dispatch(searchTask(debouncedSearchTerm))
+				.catch((error) => {
+					console.error(error)
+				})
+				.then(() => {
+					if (isSort) {
+						dispatch(SORT_LIST)
 					}
 				})
-				.catch(() => {
-					throw new Error('Произошла ошибка при поиске')
+				.finally(() => {
+					dispatch(SET_IS_LOADING)
 				})
-				.finally(() => setIsLoading(false))
 		} else {
 			if (isSearch) {
-				setResultTextValue('')
-				getTodoList(setIsLoading, setTodoLists, setResultTextValue)
-				setIsSearch(false)
+				dispatch(SET_IS_SEARCH)
+				dispatch(SET_IS_LOADING)
+				dispatch(getTodoList())
+					.catch((error) => console.error(error))
+					.then(() => {
+						if (isSort) {
+							dispatch(SORT_LIST)
+						}
+					})
+					.finally(() => dispatch(SET_IS_LOADING))
 			}
 		}
 	}, [debouncedSearchTerm])
@@ -81,8 +101,8 @@ export const Create = ({ setIsLoading, setResultTextValue }) => {
 			<Title />
 			<div className={s.change}>
 				<Search onSearch={onSearch} />
-				<Button type={'add'} onClick={handleClickAddTask} disabled={isNotAvailable} />
 
+				<Button type={'add'} onClick={handleClickAddTask} disabled={isNotAvailable} />
 				<Button type={'sort'} onClick={handleClickSort} sort={isSort} />
 			</div>
 		</>

@@ -1,4 +1,10 @@
-import { createStore } from 'redux'
-import reducer from './reducer'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { thunk } from 'redux-thunk'
+import { listReducer, appReducer } from './reducers'
 
-export const store = createStore(reducer)
+const reducer = combineReducers({
+	appState: appReducer,
+	listState: listReducer,
+})
+
+export const store = createStore(reducer, applyMiddleware(thunk))

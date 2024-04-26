@@ -1,29 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { Create, Loader, List } from './components'
 
-import { getTodoList } from './utils/getTodoList'
+import { SET_IS_LOADING, getTodoList } from './redux/actions'
+import { selectIsLoading } from './redux/selectors'
 
-import { AppContextProvider } from './context/appContextProvider'
+import { useDispatch, useSelector } from 'react-redux'
 
 function App() {
-	const [todoLists, setTodoLists] = useState([])
-	const [isLoading, setIsLoading] = useState(true)
-	const [resultTextValue, setResultTextValue] = useState('')
+	const dispatch = useDispatch()
+	const isLoading = useSelector(selectIsLoading)
 
 	useEffect(() => {
-		getTodoList(setIsLoading, setTodoLists, setResultTextValue)
+		dispatch(SET_IS_LOADING)
+
+		dispatch(getTodoList())
+			.catch((error) => {
+				console.error(error)
+			})
+			.finally(() => dispatch(SET_IS_LOADING))
 	}, [])
 
 	return (
 		<div className='container'>
-			<AppContextProvider
-				todoListValue={{ todoLists, setTodoLists }}
-			>
-				<Create setIsLoading={setIsLoading} setResultTextValue={setResultTextValue} />
+			<Create />
 
-				{isLoading ? <Loader /> : <List resultTextValue={resultTextValue} />}
-			</AppContextProvider>
+			{isLoading ? <Loader /> : <List />}
 		</div>
 	)
 }
